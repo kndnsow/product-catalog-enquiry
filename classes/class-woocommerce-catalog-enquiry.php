@@ -52,7 +52,6 @@ class Woocommerce_Catalog_Enquiry {
 		add_action('init', array(&$this, 'init'), 0);
 		// Catalog Email setup
 		add_filter('woocommerce_email_classes', array(&$this, 'woocommerce_catalog_enquiry_email_setup' ));
-		add_action( 'rest_api_init', array( $this, 'catalog_rest_routes_react_module' ) );
 	}
 	
 	/**
@@ -65,9 +64,14 @@ class Woocommerce_Catalog_Enquiry {
 
 		// Init ajax
 		if(defined('DOING_AJAX')) {
-	      	$this->load_class('ajax');
-	      	$this->ajax = new  Woocommerce_Catalog_Enquiry_Ajax();
-	    }
+			$this->load_class('ajax');
+			$this->ajax = new  Woocommerce_Catalog_Enquiry_Ajax();
+		}
+
+		if (!is_admin() || defined('DOING_AJAX')) {
+			$this->load_class('template');
+			$this->template = new Woocommerce_Catalog_Enquiry_Template();
+		}
 
 		if (is_admin()) {
 			$this->load_class('admin');
@@ -79,41 +83,10 @@ class Woocommerce_Catalog_Enquiry {
 			$this->frontend = new Woocommerce_Catalog_Enquiry_Frontend();
 		}
 
-		if (!get_option('_is_dismiss_mvx_catalog340_notice', false) && current_user_can('manage_options')) {
-            add_action('admin_notices', array(&$this, 'mvx_catalog_service_page_notice'));
-        }
+		if (current_user_can('manage_options')) {
+			add_action( 'rest_api_init', array( $this, 'catalog_rest_routes_react_module' ) );
+		}
 	}
-
-	/**
-     * Display WCMp service notice in admin panel
-     */
-    public function mvx_catalog_service_page_notice() {
-        ?>
-        <div class="updated mvx_catalog_admin_new_banner">
-            <div class="round"></div>
-            <div class="round1"></div>
-            <div class="round2"></div>
-            <div class="round3"></div>
-            <div class="round4"></div>
-            <div class="mvx_catalog_banner-content">
-                <span class="txt"><?php esc_html_e('Presenting New and Improved Product Catalog Enquiry.', 'woocommerce-catalog-enquiry') ?>  </span>
-                <div class="rightside">        
-                    <a href="https://multivendorx.com/blog/6-new-changes-in-product-catalog-enquiry" target="_blank" class="mvx_catalog_btn_service_claim_now"><?php esc_html_e('View the latest addition.', 'woocommerce-catalog-enquiry'); ?></a>
-                    <button onclick="dismiss_servive_notice(event);" type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-                </div>
-
-            </div>
-        </div>
-        <style type="text/css">.clearfix{clear:both}.mvx_catalog_admin_new_banner.updated{border-left:0}.mvx_catalog_admin_new_banner{box-shadow:0 3px 1px 1px rgba(0,0,0,.2);padding:10px 30px;background:#fff;position:relative;overflow:hidden;clear:both;border-top:2px solid #8abee5;text-align:left;background-size:contain}.mvx_catalog_admin_new_banner .round{width:200px;height:200px;position:absolute;border-radius:100%;border:30px solid rgba(157,42,255,.05);top:-150px;left:73px;z-index:1}.mvx_catalog_admin_new_banner .round1{position:absolute;border-radius:100%;border:45px solid rgba(194,108,144,.05);bottom:-82px;right:-58px;width:180px;height:180px;z-index:1}.mvx_catalog_admin_new_banner .round2,.mvx_catalog_admin_new_banner .round3{border-radius:100%;width:180px;height:180px;position:absolute;z-index:1}.mvx_catalog_admin_new_banner .round2{border:18px solid rgba(194,108,144,.05);top:35px;left:249px}.mvx_catalog_admin_new_banner .round3{border:45px solid rgba(31,194,255,.05);top:2px;right:40%}.mvx_catalog_admin_new_banner .round4{position:absolute;border-radius:100%;border:31px solid rgba(31,194,255,.05);top:11px;left:-49px;width:100px;height:100px;z-index:1}.mvx_catalog_banner-content{display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;align-items:center}.mvx_catalog_admin_new_banner .txt{color:#333;font-size:15px;line-height:1.4;width:calc(100% - 345px);position:relative;z-index:2;display:inline-block;font-weight:400;float:left;padding-left:8px}.mvx_catalog_admin_new_banner .link,.mvx_catalog_admin_new_banner .mvx_catalog_btn_service_claim_now{font-weight:400;display:inline-block;z-index:2;padding:0 20px;position:relative}.mvx_catalog_admin_new_banner .rightside{float:right;width:345px}.mvx_catalog_admin_new_banner .mvx_catalog_btn_service_claim_now{cursor:pointer;background:#8abee5;height:40px;color:#fff;font-size:20px;text-align:center;border:none;margin:5px 13px;border-radius:5px;text-decoration:none;line-height:40px}.mvx_catalog_admin_new_banner button:hover{opacity:.8;transition:.5s}.mvx_catalog_admin_new_banner .link{font-size:18px;line-height:49px;background:0 0;height:50px}.mvx_catalog_admin_new_banner .link a{color:#333;text-decoration:none}@media (max-width:990px){.mvx_catalog_admin_new_banner::before{left:-4%;top:-12%}}@media (max-width:767px){.mvx_catalog_admin_new_banner::before{left:0;top:0;transform:rotate(0);width:10px}.mvx_catalog_admin_new_banner .txt{width:400px;max-width:100%;text-align:center;padding:0;margin:0 auto 5px;float:none;display:block;font-size:17px;line-height:1.6}.mvx_catalog_admin_new_banner .rightside{width:100%;padding-left:10px;text-align:center;box-sizing:border-box}.mvx_catalog_admin_new_banner .mvx_catalog_btn_service_claim_now{margin:10px 0}.mvx_catalog_banner-content{display:block}}.mvx_catalog_admin_new_banner button.notice-dismiss{z-index:1;position:absolute;top:50%;transform:translateY(-50%)}</style>
-        <script type="text/javascript">
-            function dismiss_servive_notice(e, i) {
-                jQuery.post(ajaxurl, {action: "dismiss_mvx_catalog_servive_notice"}, function (e) {
-                    e && (jQuery(".mvx_catalog_admin_new_banner").addClass("hidden"), void 0 !== i && (window.open(i, '_blank')))
-                })
-            }
-        </script>
-        <?php
-    }
 
 	function catalog_rest_routes_react_module() {
 		// list of vendors on vendor tab section
@@ -185,7 +158,7 @@ class Woocommerce_Catalog_Enquiry {
 		return $emails;
 	}
 	
-	/** Cache Helpers *********************************************************/
+	/************************* Cache Helpers ****************************/
 
 	/**
 	 * Sets a constant preventing some caching plugins from caching a page. Used on dynamic pages

@@ -7,17 +7,8 @@ class Woocommerce_Catalog_Enquiry_Ajax {
 		add_action( 'wp_ajax_add_variation_for_enquiry_mail', array( $this, 'add_variation_for_enquiry_mail'));
 		add_action( 'wp_ajax_nopriv_add_variation_for_enquiry_mail', array( $this, 'add_variation_for_enquiry_mail'));
 		add_action( 'wp_mail_failed', array( $this, 'catalog_enquiry_error_mail_report'));
-		add_action('wp_ajax_dismiss_mvx_catalog_servive_notice', array(&$this, 'dismiss_mvx_catalog_servive_notice'));
-	}
 
-	/**
-     * Set a flag while dismiss MVX service notice
-     */
-    public function dismiss_mvx_catalog_servive_notice() {
-        $updated = update_option('_is_dismiss_mvx_catalog340_notice', true);
-        echo $updated;
-        die();
-    }
+	}
 	
 	public function add_variation_for_enquiry_mail() {
         $product_id = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;

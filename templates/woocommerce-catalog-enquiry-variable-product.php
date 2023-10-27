@@ -2,6 +2,9 @@
 /**
  * Variable product add to cart
  *
+ * Override this template by copying it to yourtheme/woocommerce-catalog-enquiry/woocommerce-catalog-enquiry-variable-product.php
+ *
+ *
  * @author  MultiVendorX
  * @package woocommerce-catalog-enquiry/Templates
  * @version 3.3
